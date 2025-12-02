@@ -1,41 +1,6 @@
-; external functions from X11 library
-extern XOpenDisplay
-extern XDisplayName
-extern XCloseDisplay
-extern XCreateSimpleWindow
-extern XMapWindow
-extern XRootWindow
-extern XSelectInput
-extern XFlush
-extern XCreateGC
-extern XSetForeground
-extern XDrawLine
-extern XDrawPoint
-extern XDrawArc
-extern XFillArc
-extern XNextEvent
+%include "etapes/common.asm"
 
-extern exit
-
-%define	StructureNotifyMask	131072
-%define KeyPressMask		1
-%define ButtonPressMask		4
-%define MapNotify		19
-%define KeyPress		2
-%define ButtonPress		4
-%define Expose			12
-%define ConfigureNotify		22
-%define CreateNotify 16
-%define QWORD	8
-%define DWORD	4
-%define WORD	2
-%define BYTE	1
-%define NBTRI	1
-%define BYTE	1
-%define	LARGEUR 400	; largeur en pixels de la fenêtre
-%define HAUTEUR 400	; hauteur en pixels de la fenêtre
-
-global main
+global drawLines
 
 section .bss
 display_name:	resq	1
@@ -62,7 +27,7 @@ section .text
 ;########### PROGRAMME PRINCIPAL ##################
 ;##################################################
 
-main:
+drawLines:
     ; Sauvegarde du registre de base pour préparer les appels à printf
     push    rbp
     mov     rbp, rsp
