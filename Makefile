@@ -41,7 +41,8 @@ etape1: $(ETAPES_DIR)/etape1.asm $(FUNCTIONS_SOURCES)
 	make assemble file=etape1
 	gcc $(ETAPES_DIR)/etape1.o $(FUNCTIONS_OBJECTS) -o $(OUTPUT_DIR)/etape1.out $(GCC_FLAGS)
 	rm -rf $(ETAPES_DIR)/etape1.o $(FUNCTIONS_OBJECTS) && \
-	echo "$(OUTPUT_DIR)/etape1.out a été crée"
+	echo "$(OUTPUT_DIR)/etape1.out a été crée"  
+	
 
 # Nettoyage
 clean:
