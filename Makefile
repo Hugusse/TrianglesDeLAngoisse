@@ -55,6 +55,12 @@ etape3: $(ETAPES_DIR)/etape3.asm $(FUNCTIONS_SOURCES)
 	gcc $(OUTPUT_DIR)/etape3.o $(OUTPUT_DIR)/draw_one_triangle.o $(OUTPUT_DIR)/fillTriangle.o $(OUTPUT_DIR)/determinant.o $(OUTPUT_DIR)/myrandom.o -o $(OUTPUT_DIR)/etape3.out $(GCC_FLAGS)	
 	echo "$(OUTPUT_DIR)/etape3.out a été créé"
 
+etape4: $(ETAPES_DIR)/etape4.asm $(FUNCTIONS_SOURCES)
+	mkdir -p $(OUTPUT_DIR)
+	make assemble file=etape4
+	gcc $(OUTPUT_DIR)/etape4.o $(OUTPUT_DIR)/draw_one_triangle.o $(OUTPUT_DIR)/fillTriangle.o $(OUTPUT_DIR)/determinant.o $(OUTPUT_DIR)/myrandom.o -o $(OUTPUT_DIR)/etape4.out $(GCC_FLAGS)	
+	echo "$(OUTPUT_DIR)/etape4.out a été créé"
+
 clean:
 	echo "Suppression des exécutables"
 	rm -f $(OUTPUT_DIR)/*.out
