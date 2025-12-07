@@ -2,8 +2,9 @@
 
 global main
 
-extern fillTriangle
-extern random_number
+extern draw_one_triangle
+
+%define NBTRI 5
 
 section .bss
 display_name:	resq	1
@@ -13,22 +14,14 @@ screen:			resd	1
 event:		times	24 dq 0
 
 section .data
-; Coordonnées du triangle (générées aléatoirement)
-tri_x1:    dd  0
-tri_y1:    dd  0
-tri_x2:    dd  0
-tri_y2:    dd  0
-tri_x3:    dd  0
-tri_y3:    dd  0
+colors:		dd	0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF
+		dd	0x00FFFF, 0xFFA500, 0x800080, 0xFFC0CB, 0x808080
 
 section .text
 
 main:
     push rbp
     mov rbp, rsp
-    
-    ; Génère les coordonnées aléatoires du triangle
-    call generate_random_triangle
     
     ; Ouvre le display
     xor rdi, rdi
@@ -75,7 +68,11 @@ main:
 
     ; Crée GC
     mov rdi, qword[display_name]
+    test rdi, rdi
+    jz closeDisplay
     mov rsi, qword[window_ptr]
+    test rsi, rsi
+    jz closeDisplay
     xor rdx, rdx
     xor rcx, rcx
     call XCreateGC
@@ -99,28 +96,32 @@ boucle:
     jmp boucle
 
 dessin:
-    ; Change couleur en rouge
-    mov rdi, qword[display_name]
-    mov rsi, qword[gc_ptr]
-    mov edx, 0xFF0000
-    call XSetForeground
+    ; Appelle draw_one_triangle NBTRI fois
+    xor r12, r12                        ; Compteur
+
+.loop:
+    cmp r12, NBTRI
+    jge .end
     
-    ; Appelle fillTriangle avec les coordonnées aléatoires
+    ; Prépare les arguments
     mov rdi, qword[display_name]
     mov rsi, qword[window_ptr]
     mov rdx, qword[gc_ptr]
     
-    ; Push les coordonnées sur la pile
-    push qword[tri_y3]
-    push qword[tri_x3]
-    push qword[tri_y2]
-    push qword[tri_x2]
-    push qword[tri_y1]
-    push qword[tri_x1]
+    ; Sélectionne la couleur (modulo 10)
+    mov rax, r12
+    xor rdx, rdx
+    mov rcx, 10
+    div rcx                             ; rdx = r12 % 10
+    mov ecx, dword[colors + rdx*4]
     
-    call fillTriangle
-    add rsp, 48
+    ; Appelle la fonction
+    call draw_one_triangle
     
+    inc r12
+    jmp .loop
+
+.end:
     ; Flush
     mov rdi, qword[display_name]
     call XFlush
@@ -132,46 +133,3 @@ closeDisplay:
     call XCloseDisplay
     xor rdi, rdi
     call exit
-
-;##################################################
-;######### GÉNÉRATION TRIANGLE ALÉATOIRE ##########
-;##################################################
-
-generate_random_triangle:
-    push rbp
-    mov rbp, rsp
-    sub rsp, 32
-    
-    ; Génère x1
-    mov edi, LARGEUR
-    call random_number
-    mov dword[tri_x1], eax
-    
-    ; Génère y1
-    mov edi, HAUTEUR
-    call random_number
-    mov dword[tri_y1], eax
-    
-    ; Génère x2
-    mov edi, LARGEUR
-    call random_number
-    mov dword[tri_x2], eax
-    
-    ; Génère y2
-    mov edi, HAUTEUR
-    call random_number
-    mov dword[tri_y2], eax
-    
-    ; Génère x3
-    mov edi, LARGEUR
-    call random_number
-    mov dword[tri_x3], eax
-    
-    ; Génère y3
-    mov edi, HAUTEUR
-    call random_number
-    mov dword[tri_y3], eax
-    
-    add rsp, 32
-    pop rbp
-    ret
