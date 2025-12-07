@@ -52,7 +52,7 @@ etape2: $(ETAPES_DIR)/etape2.asm $(FUNCTIONS_SOURCES)
 etape3: $(ETAPES_DIR)/etape3.asm $(FUNCTIONS_SOURCES)
 	mkdir -p $(OUTPUT_DIR)
 	make assemble file=etape3
-	gcc $(OUTPUT_DIR)/etape3.o $(OUTPUT_DIR)/draw_one_triangle.o $(OUTPUT_DIR)/fillTriangle.o $(OUTPUT_DIR)/determinant.o $(OUTPUT_DIR)/myrandom.o -o $(OUTPUT_DIR)/etape2.out $(GCC_FLAGS)	
+	gcc $(OUTPUT_DIR)/etape3.o $(OUTPUT_DIR)/draw_one_triangle.o $(OUTPUT_DIR)/fillTriangle.o $(OUTPUT_DIR)/determinant.o $(OUTPUT_DIR)/myrandom.o -o $(OUTPUT_DIR)/etape3.out $(GCC_FLAGS)	
 	echo "$(OUTPUT_DIR)/etape3.out a été créé"
 
 clean:

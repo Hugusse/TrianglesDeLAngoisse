@@ -1,87 +1,79 @@
 %include "etapes/common.asm"
-
 global draw_one_triangle
-
 extern fillTriangle
 extern random_number
 
 section .text
 
-;===============================================================
-; Fonction draw_one_triangle
-;===============================================================
-; Dessine UN triangle avec des coordonnées aléatoires
-;===============================================================
-; Arguments :
-;   rdi = display
-;   rsi = window
-;   rdx = gc
-;   ecx = couleur (format 0xRRGGBB)
-;===============================================================
-
 draw_one_triangle:
     push rbp
     mov rbp, rsp
-    sub rsp, 64
+    push rbx
+    push r12
+    push r13
+    push r14
+    push r15
     
-    ; Sauvegarde des paramètres
-    mov [rbp-8], rdi                ; display
-    mov [rbp-16], rsi               ; window
-    mov [rbp-24], rdx               ; gc
-    mov [rbp-28], ecx               ; couleur
+    ; Sauvegarde des paramètres dans des registres callee-saved
+    mov r12, rdi                    ; display
+    mov r13, rsi                    ; window
+    mov r14, rdx                    ; gc
+    mov r15d, ecx                   ; couleur
     
     ; Change la couleur
-    mov rdi, qword[rbp-8]
-    mov rsi, qword[rbp-24]
-    mov edx, dword[rbp-28]
+    mov rdi, r12                    ; display
+    mov rsi, r14                    ; gc
+    mov edx, r15d                   ; couleur (32 bits suffisent)
     call XSetForeground
     
-    ; Génère x1
+    ; Génère les 6 coordonnées et les sauvegarde sur la pile
+    sub rsp, 48                     ; 6 coordonnées × 8 octets
+    
+    ; x1
     mov edi, LARGEUR
     call random_number
-    mov [rbp-32], eax               ; x1
+    mov [rsp], eax
     
-    ; Génère y1
+    ; y1
     mov edi, HAUTEUR
     call random_number
-    mov [rbp-36], eax               ; y1
+    mov [rsp+8], eax
     
-    ; Génère x2
+    ; x2
     mov edi, LARGEUR
     call random_number
-    mov [rbp-40], eax               ; x2
+    mov [rsp+16], eax
     
-    ; Génère y2
+    ; y2
     mov edi, HAUTEUR
     call random_number
-    mov [rbp-44], eax               ; y2
+    mov [rsp+24], eax
     
-    ; Génère x3
+    ; x3
     mov edi, LARGEUR
     call random_number
-    mov [rbp-48], eax               ; x3
+    mov [rsp+32], eax
     
-    ; Génère y3
+    ; y3
     mov edi, HAUTEUR
     call random_number
-    mov [rbp-52], eax               ; y3
+    mov [rsp+40], eax
     
-    ; Appelle fillTriangle
-    mov rdi, qword[rbp-8]           ; display
-    mov rsi, qword[rbp-16]          ; window
-    mov rdx, qword[rbp-24]          ; gc
+    ; Prépare l'appel à fillTriangle
+    mov rdi, r12                    ; display
+    mov rsi, r13                    ; window
+    mov rdx, r14                    ; gc
     
-    ; Push les coordonnées sur la pile
-    push qword[rbp-52]              ; y3
-    push qword[rbp-48]              ; x3
-    push qword[rbp-44]              ; y2
-    push qword[rbp-40]              ; x2
-    push qword[rbp-36]              ; y1
-    push qword[rbp-32]              ; x1
-    
+    ; Les coordonnées sont déjà sur la pile dans le bon ordre
     call fillTriangle
+    
+    ; Nettoie
     add rsp, 48
     
-    add rsp, 64
+    pop r15
+    pop r14
+    pop r13
+    pop r12
+    pop rbx
     pop rbp
     ret
