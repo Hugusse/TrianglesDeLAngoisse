@@ -21,6 +21,14 @@ x2:	dd	0
 y1:	dd	0
 y2:	dd	0
 
+; Coordonnées des 3 points du triangle
+triangle_x1:	dd	0
+triangle_y1:	dd	0
+triangle_x2:	dd	0
+triangle_y2:	dd	0
+triangle_x3:	dd	0
+triangle_y3:	dd	0
+
 section .text
 	
 ;##################################################
@@ -28,9 +36,18 @@ section .text
 ;##################################################
 
 drawLines:
-    ; Sauvegarde du registre de base pour préparer les appels à printf
+    ; Paramètres en entrée (convention x86-64 System V):
+    ; rdi = x1, rsi = y1, rdx = x2, rcx = y2, r8 = x3, r9 = y3
     push    rbp
     mov     rbp, rsp
+    
+    ; Stocke les coordonnées reçues
+    mov dword[triangle_x1], edi
+    mov dword[triangle_y1], esi
+    mov dword[triangle_x2], edx
+    mov dword[triangle_y2], ecx
+    mov dword[triangle_x3], r8d
+    mov dword[triangle_y3], r9d
 	
     ; Récupère le nom du display par défaut (en passant NULL)
     xor     rdi, rdi          ; rdi = 0 (NULL)
@@ -122,88 +139,44 @@ dessin:
 	call XSetForeground
 ; Fin Change la couleur de dessin
 
-	mov dword[x1],200
-	mov dword[y1],100
-; Dessin d'un point	
+; Dessin de la ligne 1->2 (point 1 vers point 2)
 	mov rdi,qword[display_name]
 	mov rsi,qword[window]
 	mov rdx,qword[gc]
-	mov ecx,dword[x1]	; coordonnée en x
-	mov r8d,dword[y1]	; coordonnée en y
-	call XDrawPoint
-; Fin Dessin d'un point
-
-; Changer la couleur de dessin
-	mov rdi,qword[display_name]
-	mov rsi,qword[gc]
-	mov edx,0xFF00FF	; Couleur du crayon (violet)
-	call XSetForeground
-; Fin Change la couleur de dessin
-
-	mov dword[x1],100
-	mov dword[y1],100
-	mov dword[x2],200
-	mov dword[y2],150
-; Dessin d'une ligne
-	mov rdi,qword[display_name]
-	mov rsi,qword[window]
-	mov rdx,qword[gc]
-	mov ecx,dword[x1]	; coordonnée source en x
-	mov r8d,dword[y1]	; coordonnée source en y
-	mov r9d,dword[x2]	; coordonnée destination en x
-	mov r14d,dword[y2]
-	push r14		; coordonnée destination en y
+	mov ecx,dword[triangle_x1]	; x1
+	mov r8d,dword[triangle_y1]	; y1
+	mov r9d,dword[triangle_x2]	; x2
+	mov r10d,dword[triangle_y2]	; y2
+	push r10		; y2 sur la stack
 	call XDrawLine
 	add rsp,8
-; Fin Dessin d'une ligne
+; Fin Dessin ligne 1->2
 
-; Changer la couleur de dessin
-	mov rdi,qword[display_name]
-	mov rsi,qword[gc]
-	mov edx,0xFFFF00	; Couleur du crayon (jaune)
-	call XSetForeground
-; Fin Change la couleur de dessin
-
-	mov dword[x1],200
-	mov dword[y1],200
-	mov dword[x2],50
-	mov dword[y2],250
-; Dessin d'une ligne
+; Dessin de la ligne 2->3 (point 2 vers point 3)
 	mov rdi,qword[display_name]
 	mov rsi,qword[window]
 	mov rdx,qword[gc]
-	mov ecx,dword[x1]	; coordonnée source en x
-	mov r8d,dword[y1]	; coordonnée source en y
-	mov r9d,dword[x2]	; coordonnée destination en x
-	mov r14d,dword[y2]
-	push r14		; coordonnée destination en y
+	mov ecx,dword[triangle_x2]	; x2
+	mov r8d,dword[triangle_y2]	; y2
+	mov r9d,dword[triangle_x3]	; x3
+	mov r10d,dword[triangle_y3]	; y3
+	push r10		; y3 sur la stack
 	call XDrawLine
 	add rsp,8
-; Fin Dessin d'une ligne
+; Fin Dessin ligne 2->3
 
-; Changer la couleur de dessin
-	mov rdi,qword[display_name]
-	mov rsi,qword[gc]
-	mov edx,0x00FFFF	; Couleur du crayon (cyan)
-	call XSetForeground
-; Fin Change la couleur de dessin
-
-	mov dword[x1],250
-	mov dword[y1],50
-	mov dword[x2],150
-	mov dword[y2],250
-; Dessin d'une ligne
+; Dessin de la ligne 3->1 (point 3 vers point 1)
 	mov rdi,qword[display_name]
 	mov rsi,qword[window]
 	mov rdx,qword[gc]
-	mov ecx,dword[x1]	; coordonnée source en x
-	mov r8d,dword[y1]	; coordonnée source en y
-	mov r9d,dword[x2]	; coordonnée destination en x
-	mov r14d,dword[y2]
-	push r14		; coordonnée destination en y
+	mov ecx,dword[triangle_x3]	; x3
+	mov r8d,dword[triangle_y3]	; y3
+	mov r9d,dword[triangle_x1]	; x1
+	mov r10d,dword[triangle_y1]	; y1
+	push r10		; y1 sur la stack
 	call XDrawLine
 	add rsp,8
-; Fin Dessin d'une ligne
+; Fin Dessin ligne 3->1
 dessin2:
 
 
