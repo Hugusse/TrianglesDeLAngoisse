@@ -41,10 +41,13 @@ etape1: $(ETAPES_DIR)/etape1.asm $(FUNCTIONS_SOURCES)
 	mkdir -p $(OUTPUT_DIR)
 	make assemble file=etape1
 	gcc $(OUTPUT_DIR)/etape1.o $(OUTPUT_DIR)/drawLines.o $(OUTPUT_DIR)/myrandom.o $(OUTPUT_DIR)/distance_points.o -o $(OUTPUT_DIR)/etape1.out $(GCC_FLAGS)
-	echo "$(OUTPUT_DIR)/etape1.out a été créé"  
-	
+	echo "$(OUTPUT_DIR)/etape1.out a été créé"
 
-# Nettoyage
+etape2: $(ETAPES_DIR)/etape2.asm $(FUNCTIONS_SOURCES)
+	mkdir -p $(OUTPUT_DIR)
+	make assemble file=etape2
+	gcc $(OUTPUT_DIR)/etape2.o $(OUTPUT_DIR)/fillTriangle.o $(OUTPUT_DIR)/determinant.o $(OUTPUT_DIR)/myrandom.o $(OUTPUT_DIR)/distance_points.o -o $(OUTPUT_DIR)/etape2.out $(GCC_FLAGS)
+	echo "$(OUTPUT_DIR)/etape2.out a été créé"
 clean:
 	echo "Suppression des exécutables"
 	rm -f $(OUTPUT_DIR)/*.out
