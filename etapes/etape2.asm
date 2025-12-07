@@ -165,6 +165,11 @@ closeDisplay:
     mov rbp, rsp
     sub rsp, 32
     
+generate_triangle:
+    push rbp
+    mov rbp, rsp
+    sub rsp, 32
+    
     ; Génère 6 coordonnées aléatoires pour le triangle unique
     mov edi, LARGEUR
     call random_number
